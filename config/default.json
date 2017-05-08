@@ -1,0 +1,9 @@
+{
+  "url": {
+    "home": "https://lms.iiitb.ac.in/moodle/",
+    "login": "https://lms.iiitb.ac.in/moodle/login/index.php"
+  },
+  "flags": {
+  	"allowInsecure": true
+  }
+}
