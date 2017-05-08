@@ -1,0 +1,14 @@
+{
+  "name": "lms-scraper",
+  "version": "0.1.1",
+  "description": "LMS Scraper for IIITB",
+  "main": "index.js",
+  "repository": "https://github.com/zeroby0/lms-scraper.git",
+  "author": "<zerodividedby0@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^1.26.1",
+    "cookie": "^0.3.1",
+    "osmosis": "^1.1.4"
+  }
+}
