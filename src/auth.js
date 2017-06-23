@@ -3,7 +3,48 @@ const cookie = require('cookie');
 const debug = require('debug')('auth');
 const Promise = require('bluebird');
 
-// WARN: Super duplicated code
+// WARN: Super duplicated messy code
+
+// class preauth {
+//         static async getLoginInfo(agent) {
+//             const homeString = 'https://lms.iiitb.ac.in/moodle/my/';
+//             const headerMenu = '.headermenu';
+//             const loginInfoDiv = '.logininfo';
+
+//             return new Promise((resolve, reject) => {
+//                 agent
+//                     .get(homeString)
+//                     // .wait(headerMenu)
+//                     .find(headerMenu)
+//                     .set({
+//                         loginInfo: loginInfoDiv,
+//                     })
+//                     .data((data) => {
+//                         if(data){
+//                             resolve(data);
+//                         } else {
+//                             reject("data-null")
+//                         }
+//                     })
+//                     .error(err => reject(err));
+//             });
+//         }
+
+//         static async isLoggedIn(agent) {
+//             const loggedOut = 'You are not logged in.';
+//             const loggedIn = '';
+//             return new Promise((resolve, reject) => {
+//                 const loginStatus = preauth.getLoginInfo(agent);
+//                 loginStatus.then((result) => {
+//                     if(result === loggedOut) {
+//                         resolve('logged-out');
+//                     } else if(result.spl)
+
+//                 }, (err) => {});
+//             });
+
+//         }
+// }
 
 class auth {
     static isLoggedIn(agent) {

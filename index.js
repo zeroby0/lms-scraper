@@ -3,6 +3,7 @@ const password = process.env.LMS_PASSWORD;
 
 const osmosis = require('osmosis');
 const auth = require('./src/auth');
+const user = require('./src/user');
 
 const debug = require('debug')('main');
 
@@ -17,7 +18,24 @@ class scraper {
     }
 }
 
-auth.keepLoggedIn(username, password, osmosis);
+// auth.keepLoggedIn(username, password, osmosis);
+
+auth.login(username, password, osmosis).then(function (result) {
+    user.getLoginInfo(osmosis)
+        .then((result) => {
+            console.log(result);
+        }, (err) => {
+            console.log("Error occured " + err);
+        });
+});
+
+// user.getLoginInfo(osmosis)
+//     .then((result) => {
+//         console.log(result);
+//     }, (err) => {
+//         console.log("Error occured " + err);
+//     });
+
 
 
 
