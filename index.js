@@ -9,12 +9,8 @@ const user = new User(username, password);
 user.login(osmosis)
     .then((result) => {
         console.log(result);
-        User.isLoggedin(osmosis)
-            .then((result) => {
-                console.log(result);
-            }, (err) => {
-                console.log("Error occured " + err);
-            });
+        user.getCourses(osmosis)
+        	.then(r => console.log(r), e => console.log(e));
     }, reject => console.log(reject));
 
 // module.exports = scraper;
