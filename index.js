@@ -10,7 +10,7 @@ const user = new User(username, password);
 
 const Course = require('./src/Course/Course');
 
-const course = new Course('https://lms.iiitb.ac.in/moodle/course/view.php?id=815');
+const course = new Course('https://lms.iiitb.ac.in/moodle/course/view.php?id=816');
 
 function onLogin(osmosis) {
     course.getMaterial(osmosis)

@@ -37,6 +37,14 @@
         "selector": "#page-content",
         "link": ".corner-box .content .course_list h2 @href",
         "name": ".corner-box .content .course_list h2"
+      },
+      "course": {
+        "material": {
+          "summary": ".summary",
+          "link": ".modtype_folder a @href",
+          "name": ".modtype_folder a",
+          "desc": ".contentafterlink p"
+        }
       }
     }
   }
