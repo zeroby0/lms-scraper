@@ -10,12 +10,29 @@ class User extends Person {
         this.password = password;
     }
 
+    setCookies(cookies) {
+        this.cookies = cookies;
+    }
+
+    getCookies() {
+        return this.cookies;
+    }
+
     static async isLoggedin(agent) {
         return Auth.isLoggedin(agent);
     }
 
     async login(agent) {
-        return Auth.login(this.username, this.password, agent);
+        return new Promise((resolve, reject) => {
+            Auth.login(this.username, this.password, agent)
+                .then((result) => {
+                    if (result.code === 0) {
+                        debug(result);
+                        this.setCookies(result.cookies);
+                    }
+                    resolve(result);
+                }, (reject1) => reject(reject1));
+        });
     }
 
     async keepLoggein(agent) {
@@ -43,6 +60,29 @@ class User extends Person {
                     reject(err);
                 });
         });
+    }
+
+    static async getPrivateFiles(agent) {
+        const base = config.get('url.base');
+        const home = config.get('url.home');
+
+        return new Promise((resolve, reject) => {
+            agent.get(base + home)
+                .find('div[id^="private_files_tree_"]')
+                .set({
+                    link: ['a @href'],
+                    name: ['a'],
+                })
+                .data((data) => {
+                    // debug(data);
+                    resolve(data);
+                })
+                .error((err) => {
+                    debug(err);
+                    reject(err);
+                });
+        });
+
     }
 }
 

@@ -71,23 +71,23 @@ class Auth {
                         if (partInfo === loggedIn) { // logged in
                             agent.config('cookies', tempCookies); // set cookies
                             debug('login: %s', 'login succesful!');
-                            resolve('authenticated');
+                            resolve({ status: 'authenticated', cookies: tempCookies, code: 0 });
                         } else { // error occured
                             debug('login: %s: %s', 'Unable to log in. Header strings don\'t match', data.logininfo);
-                            reject('Unable to log in. Header strings don\'t match');
+                            reject({ status: 'headerMismatch', code: 2 });
                         }
                     }
                 })
                 .error((err) => {
                     if (err === '(find) no results for "'.concat(pageTitle).concat('"')) {
                         debug('login: invalid credentials');
-                        resolve('invalidCredentials');
+                        resolve({ status: 'invalidCredentials', code: 1 });
                     } else if (err.substring(0, 5) === '(get)') {
                         debug('login: Check network');
-                        reject('cannotConnect');
+                        reject({ status: 'cannotConnect', code: 3 });
                     } else {
                         debug('login: %s: %s', 'Error Occured', err);
-                        reject(err);
+                        reject({ statue: 'Error', error: err, code: 4 });
                     }
                 });
         });
