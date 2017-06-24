@@ -46,10 +46,10 @@ class User extends Person {
 
         return new Promise((resolve, reject) => {
             agent.get(base + home)
-                .find('#page-content')
+                .find(config.get('selector.user.courseList.selector'))
                 .set({
-                    link: ['.corner-box .content .course_list h2 @href'],
-                    name: ['.corner-box .content .course_list h2'],
+                    link: [config.get('selector.user.courseList.link')],
+                    name: [config.get('selector.user.courseList.name')],
                 })
                 .data((data) => {
                     // debug(data);
@@ -68,10 +68,10 @@ class User extends Person {
 
         return new Promise((resolve, reject) => {
             agent.get(base + home)
-                .find('div[id^="private_files_tree_"]')
+                .find(config.get('selector.user.privateFiles.selector'))
                 .set({
-                    link: ['a @href'],
-                    name: ['a'],
+                    link: [config.get('selector.user.privateFiles.link')],
+                    name: [config.get('selector.user.privateFiles.name')],
                 })
                 .data((data) => {
                     // debug(data);

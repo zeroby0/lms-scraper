@@ -18,5 +18,26 @@
   "class": {
   	"headerMenu": ".headermenu",
   	"userStatus": ".logininfo"
+  },
+  "id": {
+    "course": {
+      "forum": "#section-0",
+      "material": "#section-1",
+      "activities": "#section-2"
+    }
+  },
+  "selector": {
+    "user": {
+      "privateFiles": {
+        "selector": "div[id^=\"private_files_tree_\"]",
+        "link": "a @href",
+        "name": "a"
+      },
+      "courseList": {
+        "selector": "#page-content",
+        "link": ".corner-box .content .course_list h2 @href",
+        "name": ".corner-box .content .course_list h2"
+      }
+    }
   }
 }
