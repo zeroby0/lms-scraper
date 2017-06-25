@@ -1,0 +1,93 @@
+---
+url:
+  root: 'https://lms.iiitb.ac.in/moodle'
+  login: "/login/index.php"
+  home: "/my"
+
+flags:
+  allowInsecure: true
+
+status:
+  loggedOut: 'You are not logged in.'
+  loggedIn: 'You are logged in as '
+
+params:
+  onlineTimeout: 3000
+
+eventFlags:
+  user:
+    getCourses:
+      success: { status: 'success', code: 0 }
+      unknownError: { status: 'error', code: 1 }
+  auth:
+    login:
+      success: { status: 'authenticated', code: 0 }
+      invalidCreds: {status: 'invalidCredentials', code: 1}
+      headerMismatch: { status: 'headerMismatch', code: 2 }
+      cannotConnect: { status: 'cannotConnect', code: 3 }
+      unknownError: { status: 'Error', error: null, code: 4 }
+
+    isLoggedin:
+      success: {  status: 'success', code: 0}
+      cannotConnect: { status: 'cannotConnect', code: 1 }
+      nullValue: { status: 'nullValue', error: 2 }
+      unknownError: { status: 'Error', code: 3 }
+
+  course:
+    forum:
+      success: { status: 'success', code: 0 }
+      noForum: { status: 'noForum', code: 1 }
+      cannotConnect: { status: 'cannotConnect', code: 2 }
+      unknownError: { status: 'Error', code: 3 }
+
+    activity:
+      success: { status: 'success', code: 0 }
+      noActivity: { status: 'noActivity', code: 1 }
+      cannotConnect: { status: 'cannotConnect', code: 2 }
+      unknownError: { status: 'Error', code: 3 }
+
+    material:
+      success: { status: 'success', code: 0 }
+      noMaterial: { status: 'noMaterial', code: 1 }
+      cannotConnect: { status: 'cannotConnect', code: 2 }
+      unknownError: { status: 'Error', code: 3 }
+
+selector:
+  site:
+    pageTitle: ".headermenu"
+    userStatus: ".logininfo"
+    loggedOut: 'You are not logged in.'
+    loggedIn: 'You are logged in as '
+
+  user:
+    privateFiles:
+      selector: div[id^="private_files_tree_"]
+      link: a @href
+      name: a
+
+    courseList:
+      selector: "#page-content"
+      link: ".corner-box .content .course_list h2 @href"
+      name: ".corner-box .content .course_list h2"
+
+  course:
+    activity:
+      activity: "#section-2"
+      summary: "div.content > div > div > p"
+      link: ".modtype_assign > div > div > div:nth-child(2) > div.activityinstance > a @href"
+      name: ".modtype_assign > div > div > div:nth-child(2) > div.activityinstance > a"
+      desc: ".modtype_assign > div > div > div:nth-child(2) > div.contentafterlink > div > div > p"
+      
+    forum:
+      forum: "#section-0"
+      link: ".modtype_forum > div > div > div:nth-child(2) > div > a @href"
+      name: ".modtype_forum > div > div > div:nth-child(2) > div > a"
+      
+
+    material:
+      material: "#section-1"
+      summary: ".summary"
+      link: ".modtype_folder a @href"
+      name: ".modtype_folder a"
+      desc: ".contentafterlink p"
+
