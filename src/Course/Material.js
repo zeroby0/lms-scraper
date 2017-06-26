@@ -46,19 +46,19 @@ class Material {
                     debug(err);
                     if (err.substring(0, 5) === '(get)') {
 
-                        debug('getMaterial: Check network');
+                        debug('getContent: Check network');
                         const error = Object.assign(cannotConnect, { error: err });
                         reject(error);
 
                     } else if (err.substring(0, 6) === '(find)') {
 
-                        debug('getMaterial: No material section');
+                        debug('getContent: No material section');
                         const error = Object.assign(noContent, { error: err });
                         reject(error);
 
                     } else {
 
-                        debug('getMaterial: %s: %s', 'Error Occured', err);
+                        debug('getContent: %s: %s', 'Error Occured', err);
                         const error = Object.assign(unknownError, { error: err });
                         reject(error);
 
