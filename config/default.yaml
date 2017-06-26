@@ -32,6 +32,12 @@ eventFlags:
       cannotConnect: { status: 'cannotConnect', code: 1 }
       nullValue: { status: 'nullValue', error: 2 }
       unknownError: { status: 'Error', code: 3 }
+  material: #material class
+    getContent:
+      success: { status: 'success', code: 0 }
+      noContent: { status: 'noContent', code: 1 }
+      cannotConnect: { status: 'cannotConnect', code: 2 }
+      unknownError: { status: 'Error', code: 3 }
 
   course:
     forum:
@@ -46,7 +52,7 @@ eventFlags:
       cannotConnect: { status: 'cannotConnect', code: 2 }
       unknownError: { status: 'Error', code: 3 }
 
-    material:
+    material: # course -> getMaterial
       success: { status: 'success', code: 0 }
       noMaterial: { status: 'noMaterial', code: 1 }
       cannotConnect: { status: 'cannotConnect', code: 2 }
@@ -69,6 +75,10 @@ selector:
       selector: "#page-content"
       link: ".corner-box .content .course_list h2 @href"
       name: ".corner-box .content .course_list h2"
+
+  material:
+    link: "* > a @href"
+    name: "* > a"
 
   course:
     activity:

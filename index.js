@@ -4,6 +4,7 @@ const password = process.env.LMS_PASSWORD;
 const osmosis = require('osmosis');
 const User = require('./src/User/User');
 const Auth = require('./src/Auth/Auth');
+const Material = require('./src/Course/Material');
 
 const user = new User(username, password);
 // const net = require('./src/Helpers/Network');
@@ -15,7 +16,8 @@ const course = new Course('https://lms.iiitb.ac.in/moodle/course/view.php?id=816
 
 function onLogin(osmosis) {
 
-    course.getForums(osmosis)
+    const material = new Material('https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=5905');
+    material.getContents(osmosis)
     .then((res) => {
 
         console.log(res);
@@ -26,7 +28,9 @@ function onLogin(osmosis) {
 
     })
     .catch((err) => {
+
         console.log(err);
+        
     });
 
 }
@@ -34,7 +38,7 @@ function onLogin(osmosis) {
 user.login(osmosis)
     .then((res) => {
 
-        console.log(res);
+        // console.log(res);
         onLogin(osmosis);
 
     }, (err) => {
