@@ -41,8 +41,8 @@ class Activity {
                 .set({
                     title: titleSelector,
                     intro: introSelector,
-                    submissionLeft: [submissionRSelector],
-                    submissionRight: [submissionLSelector],
+                    submissionLeft: [submissionLSelector],
+                    submissionRight: [submissionRSelector],
                     feedbackLeft: [feedbackLSelector],
                     feedbackRight: [feedbackRSelector],
                     filesLink: filesSelector,
