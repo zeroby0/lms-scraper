@@ -1,8 +1,8 @@
 const Promise = require('bluebird');
 const config = require('config');
-const debug = require('debug')('material');
+const debug = require('debug')('activity');
 
-class Material {
+class Activity {
 
     constructor(url) {
 
@@ -16,23 +16,36 @@ class Material {
 
         debug('getContents: %s', url);
 
-        const contentSelector = config.get('selector.material.content');
+        const contentSelector = config.get('selector.activity.activity');
 
-        const linkSelector = config.get('selector.material.link');
-        const nameSelector = config.get('selector.material.name');
+        const titleSelector = config.get('selector.activity.title');
+        const introSelector = config.get('selector.activity.intro');
 
-        const success = config.get('eventFlags.material.getContent.success');
-        const noContent = config.get('eventFlags.material.getContent.noContent');
-        const cannotConnect = config.get('eventFlags.material.getContent.cannotConnect');
-        const unknownError = config.get('eventFlags.material.getContent.unknownError');
+        const submissionRSelector = config.get('selector.activity.submissionR');
+        const submissionLSelector = config.get('selector.activity.submissionL');
+
+        const feedbackLSelector = config.get('selector.activity.feedbackL');
+        const feedbackRSelector = config.get('selector.activity.feedbackR');
+
+        const filesSelector = config.get('selector.activity.files');
+
+        const success = config.get('eventFlags.activity.getContent.success');
+        const noContent = config.get('eventFlags.activity.getContent.noContent');
+        const cannotConnect = config.get('eventFlags.activity.getContent.cannotConnect');
+        const unknownError = config.get('eventFlags.activity.getContent.unknownError');
 
         return new Promise((resolve, reject) => {
 
             agent.get(url)
                 .find(contentSelector)
                 .set({
-                    link: [linkSelector],
-                    name: [nameSelector],
+                    title: titleSelector,
+                    intro: introSelector,
+                    submissionLeft: [submissionRSelector],
+                    submissionRight: [submissionLSelector],
+                    feedbackLeft: [feedbackLSelector],
+                    feedbackRight: [feedbackRSelector],
+                    filesLink: filesSelector,
                 })
                 .data((data) => {
 
@@ -72,4 +85,4 @@ class Material {
 
 }
 
-module.exports = Material;
+module.exports = Activity;

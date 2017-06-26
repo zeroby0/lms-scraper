@@ -32,7 +32,14 @@ eventFlags:
       cannotConnect: { status: 'cannotConnect', code: 1 }
       nullValue: { status: 'nullValue', error: 2 }
       unknownError: { status: 'Error', code: 3 }
-  material: #material class
+  activity: # activity class
+    getContent:
+      success: { status: 'success', code: 0 }
+      noContent: { status: 'noContent', code: 1 }
+      cannotConnect: { status: 'cannotConnect', code: 2 }
+      unknownError: { status: 'Error', code: 3 }
+      
+  material: # material class
     getContent:
       success: { status: 'success', code: 0 }
       noContent: { status: 'noContent', code: 1 }
@@ -75,8 +82,19 @@ selector:
       selector: "#page-content"
       link: ".corner-box .content .course_list h2 @href"
       name: ".corner-box .content .course_list h2"
+  
+  activity:
+    activity: "#region-main"
+    title: "#region-main > div > div > h2"
+    intro: "#intro > div > p"
+    submissionR: "div > div > div.submissionstatustable > div > table > tbody > tr > td.cell.c1.lastcol"
+    submissionL: "div > div > div.submissionstatustable > div > table > tbody > tr > td.cell.c0"
+    feedbackR: "div > div > div.feedback > div > table > tbody > tr > td.cell.c1.lastcol"
+    feedbackL: "div > div > div.feedback > div > table > tbody > tr > td.cell.c0"
+    files: "div > div > div.submissionstatustable > div > table > tbody > tr > td.cell.c1.lastcol @href"
 
   material:
+    content: ".foldertree"
     link: "* > a @href"
     name: "* > a"
 
