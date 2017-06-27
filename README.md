@@ -14,7 +14,9 @@ clone and install dependencies to get started.  
 * `git clone https://github.com/zeroby0/lms-scraper`  
 * `yarn` or `npm install`
 
-If `yarn` fails with `Failed to execute 'node-gyp clean' (Error: spawn node-gyp ENOENT)`, install with `npm` first and use `yarn` from then on.
+If `yarn` fails with `Failed to execute 'node-gyp clean' (Error: spawn node-gyp ENOENT)`, install with `npm` first and use `yarn` from then on.  
+
+> Note: Make sure you define your username and password in your environment. Either run `export LMS_USERNAME="Your Username"` and `export LMS_PASSWORD="Password"` in every terminal session before you run scraper or add them to your `bash_profile`.
 
 ## Documentation
 
