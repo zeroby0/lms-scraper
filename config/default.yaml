@@ -19,6 +19,10 @@ eventFlags:
     getCourses:
       success: { status: 'success', code: 0 }
       unknownError: { status: 'error', code: 1 }
+
+    getPrivateFiles:
+      success: { status: 'success', code: 0 }
+      unknownError: { status: 'error', code: 1 }
   auth:
     login:
       success: { status: 'authenticated', code: 0 }
@@ -28,7 +32,7 @@ eventFlags:
       unknownError: { status: 'Error', error: null, code: 4 }
 
     isLoggedin:
-      success: {  status: 'success', code: 0}
+      success: { status: 'success', code: 0}
       cannotConnect: { status: 'cannotConnect', code: 1 }
       nullValue: { status: 'nullValue', error: 2 }
       unknownError: { status: 'Error', code: 3 }
@@ -38,7 +42,7 @@ eventFlags:
       noContent: { status: 'noContent', code: 1 }
       cannotConnect: { status: 'cannotConnect', code: 2 }
       unknownError: { status: 'Error', code: 3 }
-      
+
   material: # material class
     getContent:
       success: { status: 'success', code: 0 }
@@ -82,7 +86,7 @@ selector:
       selector: "#page-content"
       link: ".corner-box .content .course_list h2 @href"
       name: ".corner-box .content .course_list h2"
-  
+
   activity:
     activity: "#region-main"
     title: "#region-main > div > div > h2"
@@ -105,12 +109,12 @@ selector:
       link: ".modtype_assign > div > div > div:nth-child(2) > div.activityinstance > a @href"
       name: ".modtype_assign > div > div > div:nth-child(2) > div.activityinstance > a"
       desc: ".modtype_assign > div > div > div:nth-child(2) > div.contentafterlink > div > div > p"
-      
+
     forum:
       forum: "#section-0"
       link: ".modtype_forum > div > div > div:nth-child(2) > div > a @href"
       name: ".modtype_forum > div > div > div:nth-child(2) > div > a"
-      
+
 
     material:
       material: "#section-1"
@@ -118,4 +122,3 @@ selector:
       link: ".modtype_folder a @href"
       name: ".modtype_folder a"
       desc: ".contentafterlink p"
-

@@ -105,6 +105,9 @@ class User extends Person {
         const base = config.get('url.root');
         const home = config.get('url.home');
 
+        const success = config.get('eventFlags.user.getPrivateFiles.success');
+        const unknownError = config.get('eventFlags.user.getPrivateFiles.unknownError');
+
         return new Promise((resolve, reject) => {
 
             agent.get(base + home)
@@ -116,13 +119,15 @@ class User extends Person {
                 .data((data) => {
 
                     // debug(data);
-                    resolve(data);
+                    const result = Object.assign(success, { data: [data.link, data.name] });
+                    resolve(result);
 
                 })
                 .error((err) => {
 
                     debug(err);
-                    reject(err);
+                    const error = Object.assign(unknownError, { error: err });
+                    reject(error);
 
                 });
 
