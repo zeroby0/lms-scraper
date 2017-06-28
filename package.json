@@ -3,9 +3,9 @@
   "version": "0.1.1",
   "description": "LMS Scraper for IIITB",
   "main": "index.js",
-  "repository": "https://github.com/zeroby0/lms-scraper.git",
-  "author": "<zerodividedby0@gmail.com>",
+  "repository": "Aravind Reddy V <aravind.reddy@iiitb.org> (https://aravindvoggu.in)",
   "license": "MIT",
+  "test": "standard && node tests.js",
   "dependencies": {
     "bluebird": "^3.5.0",
     "config": "^1.26.1",

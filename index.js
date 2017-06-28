@@ -1,54 +1,37 @@
-const username = process.env.LMS_USERNAME;
-const password = process.env.LMS_PASSWORD;
+const username = process.env.LMS_USERNAME
+const password = process.env.LMS_PASSWORD
 
-const osmosis = require('osmosis');
-const User = require('./src/User/User');
-const Auth = require('./src/Auth/Auth');
-const Material = require('./src/Course/Material');
-const Activity = require('./src/COurse/Activity');
+const osmosis = require('osmosis')
+const User = require('./src/User/User')
 
-const user = new User(username, password);
+const Activity = require('./src/COurse/Activity')
+
+const user = new User(username, password)
 // const net = require('./src/Helpers/Network');
-
-
-const Course = require('./src/Course/Course');
 
 // const course = new Course('https://lms.iiitb.ac.in/moodle/course/view.php?id=816');
 
-function onLogin(osmosis) {
-
-    const activity = new Activity('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=6146');
+function onLogin (osmosis) {
+  const activity = new Activity('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=6146')
     // const activity = new Activity('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=6481');
-    
-    activity.getContent(osmosis)
+
+  activity.getContent(osmosis)
     .then((res) => {
-
-        console.log(res);
-
+      console.log(res)
     }, (err) => {
-
-        console.log(err);
-
+      console.log(err)
     })
     .catch((err) => {
-
-        console.log(err);
-        
-    });
-
+      console.log(err)
+    })
 }
 
 user.login(osmosis)
     .then((res) => {
-
         // console.log(res);
-        onLogin(osmosis);
-
+      onLogin(osmosis)
     }, (err) => {
-
-        console.log(err);
-
-    });
-
+      console.log(err)
+    })
 
 // module.exports = scraper;
