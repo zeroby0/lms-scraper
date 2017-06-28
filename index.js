@@ -7,9 +7,6 @@ const User = require('./src/User/User')
 const Activity = require('./src/COurse/Activity')
 
 const user = new User(username, password)
-// const net = require('./src/Helpers/Network');
-
-// const course = new Course('https://lms.iiitb.ac.in/moodle/course/view.php?id=816');
 
 function onLogin (osmosis) {
   const activity = new Activity('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=6146')

@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "Aravind Reddy V <aravind.reddy@iiitb.org> (https://aravindvoggu.in)",
   "license": "MIT",
-  "test": "standard && node tests.js",
+  "test": "standard --verbose | snazzy && node tests.js",
   "dependencies": {
     "bluebird": "^3.5.0",
     "config": "^1.26.1",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "debug": "^2.6.8",
+    "snazzy": "^7.0.0",
     "standard": "^10.0.2"
   }
 }
