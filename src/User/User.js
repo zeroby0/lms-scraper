@@ -1,102 +1,153 @@
 const config = require('config')
+const cookie = require('cookie')
 const debug = require('debug')('User')
-const Auth = require('../Auth/Auth')
-const Person = require('./Person')
+const Promise = require('bluebird')
 
-class User extends Person {
-  constructor (username, password) {
-    super()
-    this.username = username
-    this.password = password
-  }
+function clone (obj) {  // this is my new favourite function; deep clones objects
+  return JSON.parse(JSON.stringify(obj))
+}
 
-  setCookies (cookies) {
-    this.cookies = cookies
-  }
+class User {
+  static async login (username, password, useragent) {
+    // URL
+    const url = clone(config.get('url'))
+    const base = url.root
+    const login = url.login
 
-  getCookies () {
-    return this.cookies
-  }
+    // CSS Selector
+    const selector = clone(config.get('selector.site'))
+    const pageTitle = selector.pageTitle
+    const userStatus = selector.userStatus
+    const loggedOut = selector.loggedOut
+    const loggedIn = selector.loggedIn
 
-  static async isLoggedin (agent) {
-    return Auth.isLoggedin(agent)
-  }
+    // Responses
+    const responses = clone(config.get('response.user.login'))
+    const success = responses.success
+    const invalidCreds = responses.invalidCreds
+    const headerMismatch = responses.headerMismatch
+    const cannotConnect = responses.cannotConnect
+    const unknownError = responses.unknownError
 
-  async login (agent) {
+    // the promise of 0 readability
+    // Try to login
+    // If Successful, store cookies
+    // Otherwise, throw message
     return new Promise((resolve, reject) => {
-      Auth.login(this.username, this.password, agent)
+      let tempCookies
+      useragent
+                .get(base + login)
+                // .wait(pageTitle)
+                .login(username, password)
                 .then((result) => {
-                  if (result.code === 0) {
-                    debug(result)
-                    this.setCookies(result.cookies)
+                  tempCookies = cookie.parse(result.request.headers.cookie)
+                })
+                .find(pageTitle)
+                .set({
+                  status: userStatus
+                })
+                .data((data) => {
+                  if (data.status === loggedOut) { // still logged out.
+                    debug('login: %s', 'Wrong credentials.')
+                    resolve(invalidCreds)
+                  } else {
+                    const partInfo = data.status.substring(0, loggedIn.length)
+
+                    if (partInfo === loggedIn) { // logged in
+                      useragent.config('cookies', tempCookies) // set cookies
+                      debug('login: %s', 'login succesful!')
+
+                      const statusAndCookies = { data: { status: data.status, cookies: tempCookies } }
+                      const result = Object.assign(success, statusAndCookies) // copy json object
+
+                      resolve(result)
+                    } else { // error occured
+                      debug('login: %s: %s', 'Unable to log in. Header strings don\'t match', data.status)
+                      reject(headerMismatch)
+                    }
                   }
-                  resolve(result)
-                }, reject1 => reject(reject1))
+                })
+                .error((err) => {
+                  if (err === '(find) no results for "'.concat(pageTitle).concat('"')) {
+                    debug('login: invalid credentials')
+                    resolve(invalidCreds)
+                  } else if (err.substring(0, 5) === '(get)') {
+                    debug('login: Check network')
+                    reject(cannotConnect)
+                  } else {
+                    debug('login: %s: %s', 'Error Occured', err)
+                    const error = Object.assign(unknownError, { error: err })
+                    reject(error)
+                  }
+                })
     })
   }
 
-  async keepLoggein (agent) {
-    const timeOut = config.get('params.onlineTimeout')
-    Auth.keepLoggein(this.username, this.password, agent, timeOut)
-  }
+  static async getHomeContent (useragent) {
+    // URL
+    const url = clone(config.get('url'))
+    const rootURL = url.root
+    const home = url.home
 
-  static async getCourses (agent) {
-        // url
-    const base = config.get('url.root')
-    const home = config.get('url.home')
+    // Selector
+    const cselector = clone(config.get('selector.user.courseList'))
+    const courseListSelector = cselector.courseList
+    const courseLinkSelector = cselector.courseLink
+    const courseNameSelector = cselector.courseName
 
-        // selector
-    const courseListSelector = config.get('selector.user.courseList.selector')
-    const courseLinkSelector = config.get('selector.user.courseList.link')
-    const courseNameSelector = config.get('selector.user.courseList.name')
+    const pselector = clone(config.get('selector.user.privateFiles'))
+    const privateFilesSelector = pselector.fileList
+    const privateFilesLinkSelector = pselector.fileLink
+    const privateFilesNameSelector = pselector.fileName
 
-        // event flags
-    const success = config.get('eventFlags.user.getCourses.success')
-    const unknownError = config.get('eventFlags.user.getCourses.unknownError')
+    // Responses
+    const responses = clone(config.get('response.user.getHomeContent'))
+    const success = responses.success
+    const cannotConnect = responses.cannotConnect
+    const unknownError = responses.unknownError
+    const courseDataSuccess = responses.data.courseDataSuccess
+    const filesDataSuccess = responses.data.filesDataSuccess
 
     return new Promise((resolve, reject) => {
-      agent.get(base + home)
+      useragent.get(rootURL + home)
                 .find(courseListSelector)
                 .set({
-                  link: [courseLinkSelector],
-                  name: [courseNameSelector]
+                  courseLinks: [courseLinkSelector],
+                  courseNames: [courseNameSelector]
                 })
+                // .doc() // reset find scope to document
                 .data((data) => {
-                    // debug(data);
-                  const result = Object.assign(success, { data: [data.link, data.name] })
-                  resolve(result)
+                  courseDataSuccess.data.links = data.courseLinks
+                  courseDataSuccess.data.names = data.courseNames
                 })
-                .error((err) => {
-                  debug(err)
-                  const error = Object.assign(unknownError, { error: err })
-                  reject(error)
+                .then((context, data, next) => { // clear data
+                  next(context, {})
                 })
-    })
-  }
 
-  static async getPrivateFiles (agent) {
-    const base = config.get('url.root')
-    const home = config.get('url.home')
-
-    const success = config.get('eventFlags.user.getPrivateFiles.success')
-    const unknownError = config.get('eventFlags.user.getPrivateFiles.unknownError')
-
-    return new Promise((resolve, reject) => {
-      agent.get(base + home)
-                .find(config.get('selector.user.privateFiles.selector'))
+                .find(privateFilesSelector)
                 .set({
-                  link: [config.get('selector.user.privateFiles.link')],
-                  name: [config.get('selector.user.privateFiles.name')]
+                  fileLinks: [privateFilesLinkSelector],
+                  fileNames: [privateFilesNameSelector]
                 })
                 .data((data) => {
-                    // debug(data);
-                  const result = Object.assign(success, { data: [data.link, data.name] })
-                  resolve(result)
+                  filesDataSuccess.data.links = data.fileLinks
+                  filesDataSuccess.data.names = data.fileNames
+
+                  success.data.courseList = courseDataSuccess
+                  success.data.privateFiles = filesDataSuccess
+
+                  resolve(success)
                 })
                 .error((err) => {
-                  debug(err)
-                  const error = Object.assign(unknownError, { error: err })
-                  reject(error)
+                  if (err.substring(0, 5) === '(get)') {
+                    debug('getHomeContent: cannotConnect: %s', err)
+                    cannotConnect.error = err
+                    reject(cannotConnect)
+                  } else {
+                    debug('getHomeContent: unknownError: %s', err)
+                    unknownError.error = err
+                    reject(unknownError)
+                  }
                 })
     })
   }

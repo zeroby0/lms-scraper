@@ -1,34 +1,48 @@
-const username = process.env.LMS_USERNAME
-const password = process.env.LMS_PASSWORD
+const debug = require('debug')('API')
+const config = require('config')
+const Scraper = require('./src/Scraper')
 
-const osmosis = require('osmosis')
-const User = require('./src/User/User')
+class API extends Scraper {
+  async getContent (url) {
+    const patterns = config.get('patterns')
+    const rootURL = patterns.root
+    const login = rootURL + patterns.login
+    const home = rootURL + patterns.home
+    const course = rootURL + patterns.course
+    const forum = rootURL + patterns.forum
+    const material = rootURL + patterns.material
+    const activity = rootURL + patterns.activity
 
-const Activity = require('./src/COurse/Activity')
+    let promise
 
-const user = new User(username, password)
+    switch (true) {
+      case url.includes(login):
+        debug('getContent: login - %s', url)
+        promise = this.login()
+        break
+      case url.includes(home):
+        debug('getContent: home - %s', url)
+        promise = this.getHomeContent()
+        break
+      case url.includes(course):
+        debug('getContent: course - %s', url)
+        promise = this.getCourseContent(url)
+        break
+      case url.includes(forum):
+        debug('getContent: forum - %s', url)
+        break
+      case url.includes(material):
+        debug('getContent: material - %s', url)
+        break
+      case url.includes(activity):
+        debug('getContent: activity - %s', url)
+        break
+      default:
+        debug('getContent: can\'t resolve - %s', url)
+    }
 
-function onLogin (osmosis) {
-  const activity = new Activity('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=6146')
-    // const activity = new Activity('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=6481');
-
-  activity.getContent(osmosis)
-    .then((res) => {
-      console.log(res)
-    }, (err) => {
-      console.log(err)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    return promise
+  }
 }
 
-user.login(osmosis)
-    .then((res) => {
-        // console.log(res);
-      onLogin(osmosis)
-    }, (err) => {
-      console.log(err)
-    })
-
-// module.exports = scraper;
+module.exports = API

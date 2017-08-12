@@ -2,14 +2,128 @@ const Promise = require('bluebird')
 const config = require('config')
 const debug = require('debug')('course')
 
+function clone (obj) {  // this is my new favourite function; deep clones objects
+  return JSON.parse(JSON.stringify(obj))
+}
+
 class Course {
-  constructor (url) {
-    this.url = url
+  static async getContent (courseURL, useragent) {
+    const success = clone(config.get('response.user.getCourseContent.success'))
+    const cannotConnect = clone(config.get('response.user.getCourseContent.cannotConnect'))
+
+    const forumSectionSelector = config.get('selector.course.forum.forum')
+    const forumLinkSelector = config.get('selector.course.forum.link')
+    const forumNameSelector = config.get('selector.course.forum.name')
+
+    const forumSuccess = clone(config.get('response.user.getCourseContent.forumSuccess'))
+    const noForum = clone(config.get('response.user.getCourseContent.noForum'))
+
+    const activitySectionSelector = config.get('selector.course.activity.activity')
+    const activitySummarySelector = config.get('selector.course.activity.summary')
+    const activityLinkSelector = config.get('selector.course.activity.link')
+    const activityNameSelector = config.get('selector.course.activity.name')
+    const activityDescriptionSelector = config.get('selector.course.activity.desc')
+
+    const activitySuccess = clone(config.get('response.user.getCourseContent.activitySuccess'))
+    const noActivity = clone(config.get('response.user.getCourseContent.noActivity'))
+
+    const materialSectionSelector = config.get('selector.course.material.material')
+    const materialsummarySelector = config.get('selector.course.material.summary')
+    const materiallinkSelector = config.get('selector.course.material.link')
+    const materialnameSelector = config.get('selector.course.material.name')
+    const materialdescriptionSelector = config.get('selector.course.material.desc')
+
+    const materialSuccess = clone(config.get('response.user.getCourseContent.materialSuccess'))
+    const noMaterial = clone(config.get('response.user.getCourseContent.noMaterial'))
+
+    return new Promise((resolve, reject) => {
+      useragent.get(courseURL)
+                .find(forumSectionSelector)
+                .set({
+                  forumLinks: [forumLinkSelector],
+                  forumNames: [forumNameSelector]
+                })
+                .data((data) => {
+                  // console.log('Get forums')
+                  forumSuccess.data.names = data.forumNames
+                  forumSuccess.data.links = data.forumLinks
+                  success.data.forums = forumSuccess
+                  // console.log('Got forums')
+                })
+                .then((context, data, next) => { // clear data
+                  // context.toString() for HTML Source
+                  // console.log(context.toString())
+                  next(context, {})
+                })
+                .error((err) => {
+                  // console.log(err, ' : ', courseURL)
+                  if (err.substring(0, 5) === '(get)') {
+                    debug('login: Check network')
+                    cannotConnect.error = err
+                    reject(cannotConnect)
+                  } else {
+                    debug('login: %s: %s', 'Error Occured', err)
+
+                    if (err.substr(-12) === '"#section-0"') { // no forums
+                      success.data.forums = noForum
+                    } else if (err.substr(-12) === '"#section-1"') { // no material
+                      success.data.materials = noMaterial
+                    } else if (err.substr(-12) === '"#section-2"') {
+                      success.data.activities = noActivity
+                    } else {
+                      console.log('Error occured in Course.js - id: djfb', err)
+                    }
+
+                    // reject(error)
+                  }
+                })
+
+                .find(activitySectionSelector)
+                .set({
+                  activitySummary: [activitySummarySelector],
+                  activityLinks: [activityLinkSelector],
+                  activityNames: [activityNameSelector],
+                  activityDescriptions: [activityDescriptionSelector]
+                })
+                .data((data) => {
+                  // console.log('Get activity')
+                  activitySuccess.data.summary = data.activitySummary
+                  activitySuccess.data.links = data.activityLinks
+                  activitySuccess.data.names = data.activityNames
+                  activitySuccess.data.descriptions = data.activityDescriptions
+                  success.data.activities = activitySuccess
+                  // console.log('Got activity')
+                })
+                .then((context, data, next) => { // clear data
+                  next(context, {})
+                })
+
+                .find(materialSectionSelector)
+                .set({
+                  materialSummary: [materialsummarySelector],
+                  materialLinks: [materiallinkSelector],
+                  materialNames: [materialnameSelector],
+                  materialDescriptions: [materialdescriptionSelector]
+                })
+                .data((data) => {
+                  // console.log('Get material')
+                  materialSuccess.data.summary = data.materialSummary
+                  materialSuccess.data.links = data.materialLinks
+                  materialSuccess.data.names = data.materialNames
+                  materialSuccess.data.descriptions = data.materialDescriptions
+                  success.data.materials = materialSuccess
+                  // console.log('Got material')
+                  resolve(success)
+                })
+                .error((err) => {
+                  console.log('act ', err)
+                })
+    })
   }
 
-    // very similar functions. Let alone to allow flexibility.
-  async getForums (agent) {
-    const url = this.url
+  // The following functions are deprecated. DO NOT USE.
+  static async getForums (courseURL, agent) {
+    const url = courseURL
 
     debug('getForum: %s', url)
 
@@ -54,8 +168,8 @@ class Course {
     })
   }
 
-  async getActivities (agent) {
-    const url = this.url
+  static async getActivities (courseURL, agent) {
+    const url = courseURL
 
     debug('getActivities: %s', url)
 
@@ -104,8 +218,8 @@ class Course {
     })
   }
 
-  async getMaterials (agent) {
-    const url = this.url
+  static async getMaterials (courseURL, agent) {
+    const url = courseURL
 
     debug('getMaterials: %s', url)
 
