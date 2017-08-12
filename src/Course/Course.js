@@ -7,6 +7,113 @@ function clone (obj) {  // this is my new favourite function; deep clones object
 }
 
 class Course {
+
+  static async getSource(courseURL, useragent) {
+    return new Promise((resolve, reject) => {
+      useragent.get(courseURL)
+              .find('.course-content')
+              .then((context, data, next) => { // context
+                resolve(context.toString())
+                next(context, {})
+              })
+              .error((err) => {
+                // console.log(err, ' : ', courseURL)
+                if (err.substring(0, 5) === '(get)') {
+                  debug('login: Check network')
+                  cannotConnect.error = err
+                  reject(cannotConnect)
+                } else {
+                  debug('login: %s: %s', 'Error Occured', err)
+                  // not logged in?
+                  reject(error)
+                }
+              })
+
+
+    })
+
+  }
+
+  static async getContent3(courseURL, useragent) {
+    return new Promise((resolve, reject) => {
+      Course.getSource(courseURL, useragent)
+        .then((result) => {
+          resolve(result)
+        })
+    })
+    
+  }
+
+  // Dont use this fnction.
+  static async getContent2(courseURL, useragent) {
+    const responses = clone(config.get('response.user.getCourseContent'))
+
+    const success = responses.success
+    const cannotConnect = responses.cannotConnect
+    const forumSuccess = responses.forumSuccess
+    const noForum = responses.noForum
+    const activitySuccess = responses.activitySuccess
+    const noActivity = responses.noActivity
+    const materialSuccess = responses.materialSuccess
+    const noMaterial = responses.noMaterial
+
+    const selector = clone(config.get('selector.course'))
+
+    const forumSectionSelector = selector.forum.forum
+    const forumLinkSelector = selector.forum.link
+    const forumNameSelector = selector.forum.name
+
+    const activitySectionSelector = selector.activity.activity
+    const activitySummarySelector = selector.activity.summary
+    const activityLinkSelector = selector.activity.link
+    const activityNameSelector = selector.activity.name
+    const activityDescriptionSelector = selector.activity.desc
+
+    const materialSectionSelector = selector.material.material
+    const materialsummarySelector = selector.material.summary
+    const materiallinkSelector = selector.material.link
+    const materialnameSelector = selector.material.name
+    const materialdescriptionSelector = selector.material.desc
+
+    return new Promise((resolve, reject) => {
+      useragent.get(courseURL)
+              .find('.course-content')
+              .then((context, data, next) => { // clear data
+                // context.toString() for HTML Source
+                // console.log(pretty(context.toString()))
+                resolve(pretty(context.toString()))
+                next(context, {})
+              })
+              .error((err) => {
+                // console.log(err, ' : ', courseURL)
+                if (err.substring(0, 5) === '(get)') {
+                  debug('login: Check network')
+                  cannotConnect.error = err
+                  reject(cannotConnect)
+                } else {
+                  debug('login: %s: %s', 'Error Occured', err)
+
+                  if (err.substr(-12) === '"#section-0"') { // no forums
+                    success.data.forums = noForum
+                  } else if (err.substr(-12) === '"#section-1"') { // no material
+                    success.data.materials = noMaterial
+                  } else if (err.substr(-12) === '"#section-2"') {
+                    success.data.activities = noActivity
+                  } else {
+                    console.log('Error occured in Course.js - id: djfb', err)
+                  }
+
+                  // reject(error)
+                }
+              })
+
+
+    })
+
+
+
+
+  }
   static async getContent (courseURL, useragent) {
     const success = clone(config.get('response.user.getCourseContent.success'))
     const cannotConnect = clone(config.get('response.user.getCourseContent.cannotConnect'))
@@ -52,7 +159,7 @@ class Course {
                 })
                 .then((context, data, next) => { // clear data
                   // context.toString() for HTML Source
-                  // console.log(context.toString())
+                  console.log(context.toString())
                   next(context, {})
                 })
                 .error((err) => {

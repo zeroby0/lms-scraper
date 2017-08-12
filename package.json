@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "debug": "^2.6.8",
+    "pretty": "^2.0.0",
     "snazzy": "^7.0.0",
     "standard": "^10.0.2"
   }

@@ -1,3 +1,4 @@
+const pretty = require('pretty')
 const debug = require('debug')('test')
 const API = require('./index')
 
@@ -17,6 +18,7 @@ const askForCourseContent = (url) => {
       // console.log(result.data.materials)
     }, (error) => console.log(error))
 }
+
 
 const askForHomeContent = () => {
   api.getContent('https://lms.iiitb.ac.in/moodle/my/')
