@@ -1,52 +1,101 @@
 const Promise = require('bluebird')
 const config = require('config')
 const debug = require('debug')('activity')
+const pretty = require('pretty')
+
+function getText (html) {  // Returns text from HTML while trying to preserve structure
+  return html.replace(/<[^>]+>/g, '')
+  // https://stackoverflow.com/a/41756926/6364386
+}
+
+function clone (obj) {  // this is my new favourite function; deep clones objects
+  return JSON.parse(JSON.stringify(obj))
+}
 
 class Activity {
-  constructor (url) {
-    this.url = url
-  }
-
-  async getContent (agent) {
-    const url = this.url
+  static async getContent (activityURL, agent) {
+    const url = activityURL
 
     debug('getContents: %s', url)
 
-    const contentSelector = config.get('selector.activity.activity')
+    const selector = clone(config.get('selector.activity'))
 
-    const titleSelector = config.get('selector.activity.title')
-    const introSelector = config.get('selector.activity.intro')
+    const contentSelector = selector.activity
 
-    const submissionRSelector = config.get('selector.activity.submissionR')
-    const submissionLSelector = config.get('selector.activity.submissionL')
+    const titleSelector = selector.title
+    const introSelector = selector.intro
 
-    const feedbackLSelector = config.get('selector.activity.feedbackL')
-    const feedbackRSelector = config.get('selector.activity.feedbackR')
+    const submissionRSelector = selector.submissionR
+    const submissionLSelector = selector.submissionL
 
-    const filesSelector = config.get('selector.activity.files')
+    const feedbackLSelector = selector.feedbackL
+    const feedbackRSelector = selector.feedbackR
 
-    const success = config.get('eventFlags.activity.getContent.success')
-    const noContent = config.get('eventFlags.activity.getContent.noContent')
-    const cannotConnect = config.get('eventFlags.activity.getContent.cannotConnect')
-    const unknownError = config.get('eventFlags.activity.getContent.unknownError')
+    const filesSelector = selector.files
+
+    const responses = clone(config.get('response.user.getActivityContent'))
+
+    const success = responses.success
+    const noContent = responses.noContent
+    const cannotConnect = responses.cannotConnect
+    const unknownError = responses.unknownError
 
     return new Promise((resolve, reject) => {
+      var source
+      var introSrc
       agent.get(url)
-                .find(contentSelector)
+
+                .find(contentSelector)                // General Content
                 .set({
-                  title: titleSelector,
-                  intro: introSelector,
                   submissionLeft: [submissionLSelector],
                   submissionRight: [submissionRSelector],
+                  filesLink: filesSelector,
+                  // aname: '#page-content > div > div > div:nth-child(1) > div > div > div > h2',
+                  // activityName: titleSelector,
                   feedbackLeft: [feedbackLSelector],
-                  feedbackRight: [feedbackRSelector],
-                  filesLink: filesSelector
+                  feedbackRight: [feedbackRSelector]
+                })
+                // .then((context, data, next) => { // clear data | get Source of page content
+                //   source = context.toString()
+                //   data.source = source
+                //   next(context, data)
+                // })
+
+                .find('#intro')                       // Intro Content
+                .set({
+                  introLinkTitles: ['a'],
+                  introLinks: ['a @href'],
+                  introLists: ['li']
+                })
+                .then((context, data, next) => { // get Source of intro area
+                  introSrc = context.toString()
+                  data.introText = getText(introSrc)
+                  next(context, data)
                 })
                 .data((data) => {
-                    // debug(data);
-                  const result = Object.assign(success, data)
-                  resolve(result)
+                  
+                  success.data.submission.left = data.submissionLeft
+                  success.data.submission.right = data.submissionRight
+                  success.data.submission.filesLink = data.filesLink
+
+                  success.data.feedback.left = data.feedbackLeft
+                  success.data.feedback.right = data.feedbackRight
+
+                  success.data.intro.linkTitles = data.introLinkTitles
+                  success.data.intro.links = data.introLinks
+                  success.data.intro.lists = data.introLists
+                  success.data.intro.text = data.introText
+
+                  success.url = url
+
+                  // console.log(success)
+                  // console.log(success.data.intro)
+                  // console.log(success.data.submission)
+                  // console.log(success.data.feedback)
+
+                  resolve(success)
                 })
+
                 .error((err) => {
                   debug(err)
                   if (err.substring(0, 5) === '(get)') {

@@ -33,12 +33,15 @@ class API extends Scraper {
         break
       case url.includes(material):
         debug('getContent: material - %s', url)
+        promise = this.getMaterialContent(url)
         break
       case url.includes(activity):
         debug('getContent: activity - %s', url)
+        promise = this.getActivityContent(url)
         break
       default:
         debug('getContent: can\'t resolve - %s', url)
+        promise = this.unknownContext(url)
     }
 
     return promise

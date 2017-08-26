@@ -24,6 +24,8 @@ params:
   onlineTimeout: 3000
 
 response:
+  global:
+    unknownContext: { context: 'unknown', status: 'unknownContext', url: null, code: 1 }
   user:
     login:
       success: { context: 'login', status: 'authenticated', code: 0 }
@@ -32,7 +34,7 @@ response:
       cannotConnect: { context: 'login', status: 'cannotConnect', code: 3 }
       unknownError: { context: 'login', status: 'Error', error: null, code: 4 }
     getCourseContent:
-      success: { context: 'course', status: 'success', data: { forums: null, activities: null, materials: null }, code: 0 }
+      success: { context: 'course', status: 'success', url: null, data: { forums: null, activities: null, materials: null }, code: 0 }
       cannotConnect: { context: 'course', status: 'cannotConnect', code: 1, error: null }
       forumSuccess: { context: 'forumList', status: 'success', data: { names: null, links: null }, code: 0 }
       noForum: { context: 'forumList', status: 'noForum', code: 1 }
@@ -40,6 +42,17 @@ response:
       noActivity: { context: 'activityList', status: 'noActivity', code: 1 }
       materialSuccess: { context: 'materialList', status: 'success', data: { summary: null, links: null, names: null, descriptions: null }, code: 0 }
       noMaterial: { context: 'materialList', status: 'noMaterial', code: 1 }
+      unknownError: { context: 'course', status: 'Error', error: null, code: 2 }
+    getMaterialContent:
+      success: { context: 'material', url: null, status: 'success', code: 0, data: { links: null, names: null } }
+      cannotConnect: { context: 'material', status: 'cannotConnect', code: 1, error: null }
+      noContent: { context: 'material', status: 'noContent', code: 2, error: null }
+      unknownError: { context: 'material', status: 'Error', error: null, code: 3 }
+    getActivityContent:
+      success: { context: 'activity', url: null, status: 'success', code: 0, data: { intro: { linkTitles: null, links: null, lists: null }, feedback: { left: null, right: null }, submission: { left: null, right: null, filesLink: null } } }
+      cannotConnect: { context: 'activity', status: 'cannotConnect', code: 1, error: null }
+      noContent: { context: 'activity', status: 'noContent', code: 2, error: null }
+      unknownError: { context: 'activity', status: 'Error', error: null, code: 3 }
     getHomeContent:
       success: { context: 'home', status: 'success', data: { courseList: null, privateFiles: null }, code: 0 }
       cannotConnect: { context: 'home', status: 'cannotConnect', error: null, code: 1 }

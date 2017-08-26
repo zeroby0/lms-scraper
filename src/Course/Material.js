@@ -2,52 +2,58 @@ const Promise = require('bluebird')
 const config = require('config')
 const debug = require('debug')('material')
 
+function clone (obj) {  // this is my new favourite function; deep clones objects
+  return JSON.parse(JSON.stringify(obj))
+}
+
+
 class Material {
-  constructor (url) {
-    this.url = url
-  }
-
-  async getContent (agent) {
-    const url = this.url
-
+  static async getContent (url, agent) {
     debug('getContents: %s', url)
 
-    const contentSelector = config.get('selector.material.content')
+    const selector = clone(config.get('selector.material'))
 
-    const linkSelector = config.get('selector.material.link')
-    const nameSelector = config.get('selector.material.name')
+    const contentSelector = selector.content
+    const linkSelector = selector.link
+    const nameSelector = selector.name
 
-    const success = config.get('eventFlags.material.getContent.success')
-    const noContent = config.get('eventFlags.material.getContent.noContent')
-    const cannotConnect = config.get('eventFlags.material.getContent.cannotConnect')
-    const unknownError = config.get('eventFlags.material.getContent.unknownError')
+    const responses = clone(clone(config.get('response.user.getMaterialContent')))
+
+    const success = responses.success
+    const noContent = responses.noContent
+    const cannotConnect = responses.cannotConnect
+    const unknownError = responses.unknownError
+
+    success.url = url
 
     return new Promise((resolve, reject) => {
       agent.get(url)
                 .find(contentSelector)
                 .set({
-                  link: [linkSelector],
-                  name: [nameSelector]
+                  links: [linkSelector],
+                  names: [nameSelector],
                 })
                 .data((data) => {
-                    // debug(data);
-                  const result = Object.assign(success, data)
-                  resolve(result)
+
+                  success.data.links = data.links
+                  success.data.names = data.names
+               
+                  resolve(success)
                 })
                 .error((err) => {
                   debug(err)
                   if (err.substring(0, 5) === '(get)') {
                     debug('getContent: Check network')
-                    const error = Object.assign(cannotConnect, { error: err })
-                    reject(error)
+                    cannotConnect.error = err
+                    reject(cannotConnect)
                   } else if (err.substring(0, 6) === '(find)') {
                     debug('getContent: No material section')
-                    const error = Object.assign(noContent, { error: err })
-                    reject(error)
+                    noContent.error = err
+                    reject(noContent)
                   } else {
                     debug('getContent: %s: %s', 'Error Occured', err)
-                    const error = Object.assign(unknownError, { error: err })
-                    reject(error)
+                    unknownError.error = err
+                    reject(unknownError)
                   }
                 })
     })
