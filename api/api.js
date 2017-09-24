@@ -1,6 +1,6 @@
 const debug = require('debug')('API');
 const config = require('config');
-const Scraper = require('./src/Scraper');
+const Scraper = require('./scraper/Scraper');
 
 class API extends Scraper {
   async getContent(url) {

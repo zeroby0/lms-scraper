@@ -1,7 +1,7 @@
 import test from 'ava';
 
 // const debug = require('debug')('test');
-const API = require('./index');
+const API = require('./api/api');
 
 const username = process.env.LMS_USERNAME;
 const password = process.env.LMS_PASSWORD;
