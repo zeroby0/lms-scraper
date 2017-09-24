@@ -1,6 +1,6 @@
 import test from 'ava';
 
-const debug = require('debug')('test');
+// const debug = require('debug')('test');
 const API = require('./index');
 
 const username = process.env.LMS_USERNAME;
@@ -8,48 +8,40 @@ const password = process.env.LMS_PASSWORD;
 
 const api = new API(username, password);
 
-const login_url = 'https://lms.iiitb.ac.in/moodle/login/index.php';
+const loginUrl = 'https://lms.iiitb.ac.in/moodle/login/index.php';
 
-const material_url = 'https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=6858';
-const activity_url = 'https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=7090';
-const course_url = 'https://lms.iiitb.ac.in/moodle/course/view.php?id=457';
-
-
+const materialUrl = 'https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=6858';
+const activityUrl = 'https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=7090';
+const courseUrl = 'https://lms.iiitb.ac.in/moodle/course/view.php?id=457';
 
 
-test('login', async t => {
+test('login', async (t) => {
+  const result = await api.getContent('https://lms.iiitb.ac.in/moodle/login/index.php');
 
-  const expected = 'You are logged in as ';
-  const result = api.getContent(login_url);
-  const {data} = await result
-  const actual = data.status.substr(0, expected.length);
+  t.is(result.status, 'authenticated');
+});
 
-  t.is(actual, expected);
-
-})
-
-test('material', async t => {
+test('material', async (t) => {
   // blocks till login
-  const login = await api.getContent(login_url);
+  await api.getContent(loginUrl);
 
-  const material = await api.getContent(material_url);
+  const material = await api.getContent(materialUrl);
 
   t.is(material.code, 0);
+});
 
-})
+test('activity', async (t) => {
+  await api.getContent(loginUrl);
 
-test('activity', async t => {
-  const login = await api.getContent(login_url);
-
-  const activity = await api.getContent(activity_url);
+  const activity = await api.getContent(activityUrl);
 
   t.is(activity.code, 0);
-})
+});
 
-test('course', async t => {
-  const login = await api.getContent(login_url);
+test('course', async (t) => {
+  await api.getContent(loginUrl);
 
-  const course = await api.getContent(course_url);
+  const course = await api.getContent(courseUrl);
 
-  t.is(course.status, 'success')
-})
+  t.is(course.status, 'success');
+});

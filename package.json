@@ -9,7 +9,9 @@
   "scripts": {
     "start": "node test.js",
     "test": "ava",
-    "test:watch": "ava --watch"
+    "test:watch": "ava --watch",
+    "lint": "./node_modules/.bin/eslint .",
+    "lint:fix": "/node_modules/.bin/eslint . --fix"
   },
   "test": "standard --verbose | snazzy && node test.js",
   "dependencies": {
