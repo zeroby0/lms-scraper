@@ -1,56 +1,59 @@
-const pretty = require('pretty')
-const debug = require('debug')('test')
-const API = require('./index')
+/* eslint-disable no-alert, no-console */
 
-const username = process.env.LMS_USERNAME
-const password = process.env.LMS_PASSWORD
+// const pretty = require('pretty');
+const debug = require('debug')('test');
+const API = require('./index');
 
-const api = new API(username, password)
+const username = process.env.LMS_USERNAME;
+const password = process.env.LMS_PASSWORD;
 
-const askForActivityContent = (url) => {
-  console.log('_____________________________')
-  console.log('Activity Content')
-  console.log(url)
-  api.getContent(url)
-    .then((result) => {
-      console.log(result)
-      askForMaterialContent('https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=6858')
-    })
-}
+const api = new API(username, password);
 
 const askForMaterialContent = (url) => {
-  console.log('_____________________________')
-  console.log('Material Content')
-  console.log(url)
+  console.log('_____________________________');
+  console.log('Material Content');
+  console.log(url);
   api.getContent(url)
     .then((result) => {
-      console.log(result)
-    })
-}
+      console.log(result);
+    });
+};
+
+const askForActivityContent = (url) => {
+  console.log('_____________________________');
+  console.log('Activity Content');
+  console.log(url);
+  api.getContent(url)
+    .then((result) => {
+      console.log(result);
+      askForMaterialContent('https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=6858');
+    });
+};
 
 const askForCourseContent = (url) => {
   api.getContent(url)
     .then((result) => {
-      console.log('_____________________________')
-      console.log('Course content')
-      console.log(url)
-      console.log(result)
+      console.log('_____________________________');
+      console.log('Course content');
+      console.log(url);
+      console.log(result);
 
       // console.log(result.data.forums)
       // console.log(result.data.activities)
       // console.log(result.data.materials)
-      askForActivityContent('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=4067');
+      // askForActivityContent('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=4067');
+      askForActivityContent('https://lms.iiitb.ac.in/moodle/mod/assign/view.php?id=7090');
 
       // askForActivityContent(result.data.activities.data.links[0])
-    }, (error) => console.log(error))
-}
+    }, error => console.log(error));
+};
 
 const askForHomeContent = () => {
   api.getContent('https://lms.iiitb.ac.in/moodle/my/')
     .then((result) => {
       // debug(result)
 
-      console.log(result.data)
+      console.log(result.data);
 
       // console.log("\nCourse List: ")
       // console.log(result.data.courseList)
@@ -61,15 +64,18 @@ const askForHomeContent = () => {
       //     askForCourseContent(result.data.courseList.data.links[i])
       // }
 
-      askForCourseContent('https://lms.iiitb.ac.in/moodle/course/view.php?id=457')
-    }, (error) => debug(error))
-}
+      askForCourseContent('https://lms.iiitb.ac.in/moodle/course/view.php?id=457');
+    }, error => debug(error));
+};
+
+
+
 
 api.getContent('https://lms.iiitb.ac.in/moodle/login/index.php')
-.then((result) => {
-  console.log(result)
-  // askForMaterialContent('https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=6858')
-  askForHomeContent()
-}, (message) => {
-  debug(message)
-})
+  .then((result) => {
+    console.log(result);
+    // askForMaterialContent('https://lms.iiitb.ac.in/moodle/mod/folder/view.php?id=6858')
+    askForHomeContent();
+  }, (message) => {
+    debug(message);
+  });
